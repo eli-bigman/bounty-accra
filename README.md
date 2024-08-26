@@ -1,28 +1,34 @@
 # CoinDapp 🚀
 
-CoinDapp is a comprehensive cryptocurrency dashboard application built with love using Web3.js. It consists of four main parts:
+CoinDapp is a cryptocurrency dashboard application built with [Web3.js](https://github.com/ChainSafe/web3.js). 
 
-## Dashboard 📊
+## Live Demo 🌐
 
-The dashboard provides real-time prices of various cryptocurrencies and allows users to update prices and manage their portfolio.
+Check out the live version of CoinDapp here: [CoinDapp on Fleek](https://coindapp.on-fleek.app/)
+
+## Features
+
+### Dashboard 📊
+
+View real-time cryptocurrency prices, update them, and manage your portfolio.
 
 ![Dashboard Screenshot](public/dashboard.png)
 
-## Game 🎮
+### Game 🎮
 
-The game section is an interactive feature where users can match cryptocurrencies to their correct prices.
+An interactive game where you can match cryptocurrencies to their prices.
 
 ![Game Screenshot](public/game.png)
 
-## Graph 📈
+### Graph 📈
 
-The graph section visualizes the price trends of different cryptocurrencies over time.
+Visualize price trends of cryptocurrencies over time.
 
 ![Graph Screenshot](public/graph.png)
 
-## Compare 🔍
+### Compare 🔍
 
-The compare section allows users to compare the prices of two selected cryptocurrencies.
+Compare the prices of two cryptocurrencies side by side.
 
 ![Compare Screenshot](public/compare.png)
 
@@ -40,14 +46,10 @@ In the project directory, you can run:
 
 #### `npm start`
 
-Runs the app in the development mode.\
+Runs the app in development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
 #### `npm test`
 
-Launches the test runner in the interactive watch mode.\
+Launches the test runner in interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
