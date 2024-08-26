@@ -3,6 +3,7 @@ import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 import Web3 from 'web3';
 import { ChainlinkPlugin, MainnetPriceFeeds } from "@chainsafe/web3-plugin-chainlink";
+import Table from './component/dashboardTable'
 
 function App() {
 
@@ -10,21 +11,16 @@ function App() {
   web3.registerPlugin(new ChainlinkPlugin());
 
   const fetchCryptoPrice = async () => {
-  const latestPrice = await web3.chainlink.getPrice(MainnetPriceFeeds.EthUsd); 
-  console.log(latestPrice)
+  const EthPrice = await web3.chainlink.getPrice(MainnetPriceFeeds.EthUsd); 
+  console.log(EthPrice)
   }
 
 
   return (
    <>
-   <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              Dashboard
-            </h1>
-          </div>
-    </header>
-   <button onClick={fetchCryptoPrice} className='p-10 flex-auto'>Get Eth Price</button>
+   
+   {/* <button onClick={fetchCryptoPrice} className='p-10 flex-auto'>Get Eth Price</button> */}
+   <Table/>
    </>
   );
 }
