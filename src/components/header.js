@@ -10,6 +10,8 @@ function classNames(...classes) {
 const initialNavigation = [
   { name: 'Dashboard', href: '/', current: true },
   { name: 'Graph', href: '/graph', current: false },
+  { name: 'Compare', href: '/compare', current: false },
+  { name: 'Game', href: '/game', current: false },
 ];
 
 function Header() {

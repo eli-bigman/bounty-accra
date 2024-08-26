@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Web3 from 'web3';
 import { ChainlinkPlugin, MainnetPriceFeeds } from "@chainsafe/web3-plugin-chainlink";
 import Select from 'react-select';
@@ -16,14 +16,65 @@ export default function Dashboard() {
       name: "Ethereum",
       symbol: "ETH",
       price: 0,
-      selectedCoin: "BTC",
+      selectedCoin: "ETH",
       amount: 1,
     },
-   
+    {
+      name: "Aave",
+      symbol: "AAVE",
+      price: 0,
+      selectedCoin: "AAVE",
+      amount: 1,
+    },
+    {
+      name: "Uniswap",
+      symbol: "UNI",
+      price: 0,
+      selectedCoin: "UNI",
+      amount: 1,
+    },
+    {
+      name: "Dai",
+      symbol: "DAI",
+      price: 0,
+      selectedCoin: "DAI",
+      amount: 1,
+    },
+    {
+      name: "USD Coin",
+      symbol: "USDC",
+      price: 0,
+      selectedCoin: "USDC",
+      amount: 1,
+    },
+    {
+      name: "Compound",
+      symbol: "COMP",
+      price: 0,
+      selectedCoin: "COMP",
+      amount: 1,
+    },
+    {
+      name: "Maker",
+      symbol: "MKR",
+      price: 0,
+      selectedCoin: "MKR",
+      amount: 1,
+    },
+    {
+      name: "Yearn Finance",
+      symbol: "YFI",
+      price: 0,
+      selectedCoin: "YFI",
+      amount: 1,
+    },
   ]);
   const [coinOptions, setCoinOptions] = useState([]);
   const [error, setError] = useState(null);
   const [buttonClicked, setButtonClicked] = useState(false);
+  const [selectedCoin1, setSelectedCoin1] = useState(null);
+  const [selectedCoin2, setSelectedCoin2] = useState(null);
+  const [comparisonResult, setComparisonResult] = useState(null);
 
   const fetchCryptoPrices = async () => {
     try {
@@ -31,22 +82,29 @@ export default function Dashboard() {
       const web3 = new Web3(window.ethereum);
       web3.registerPlugin(new ChainlinkPlugin());
 
-      const prices = await Promise.all([ 
-        web3.chainlink.getPrice(MainnetPriceFeeds.BtcUsd), 
+      const prices = await Promise.all([
+        web3.chainlink.getPrice(MainnetPriceFeeds.BtcUsd),
         web3.chainlink.getPrice(MainnetPriceFeeds.EthUsd),
+        web3.chainlink.getPrice(MainnetPriceFeeds.AaveUsd),
+        web3.chainlink.getPrice(MainnetPriceFeeds.UniUsd),
+        web3.chainlink.getPrice(MainnetPriceFeeds.DaiUsd),
+        web3.chainlink.getPrice(MainnetPriceFeeds.UsdcUsd),
+        web3.chainlink.getPrice(MainnetPriceFeeds.CompUsd),
+        web3.chainlink.getPrice(MainnetPriceFeeds.MkrUsd),
+        web3.chainlink.getPrice(MainnetPriceFeeds.YfiUsd),
       ]);
 
       console.log("Prices fetched:", prices);
 
       setCryptoPrices(prevPrices => prevPrices.map((coin, index) => {
         const priceData = prices[index];
-        const price = priceData ? parseFloat(priceData.answer) / 1e8 : coin.price; 
+        const price = priceData ? parseFloat(priceData.answer) / 1e8 : coin.price;
         return {
           ...coin,
           price: price,
         };
       }));
-      setError(null); // Clear any previous errors
+      setError(null); 
     } catch (error) {
       console.error("Error fetching crypto prices:", error);
       setError("Failed to fetch cryptocurrency prices. Please try again later.");
@@ -71,26 +129,40 @@ export default function Dashboard() {
     extractCoinOptions();
   }, []);
 
-  const handleCoinChange = (coin, index) => {
-    setCryptoPrices(prevPrices => prevPrices.map((item, i) => (
-      i === index ? { ...item, selectedCoin: coin.value } : item
-    )));
-  };
-
-  const handleAmountChange = (e, index) => {
-    const value = e.target.value;
-    setCryptoPrices(prevPrices => prevPrices.map((item, i) => (
-      i === index ? { ...item, amount: value } : item
-    )));
-  };
-
-  const handleConvert = (coin) => {
-    console.log(`Converting ${coin.amount} ${coin.symbol} to ${coin.selectedCoin}`);
+  const handleCompare = () => {
+    if (selectedCoin1 && selectedCoin2) {
+      const coin1 = cryptoPrices.find(coin => coin.symbol === selectedCoin1.value);
+      const coin2 = cryptoPrices.find(coin => coin.symbol === selectedCoin2.value);
+      console.log("Comparing coins:", coin1, coin2);
+      if (coin1 && coin2) {
+        const result = {
+          coin1: {
+            name: coin1.name,
+            value: coin1.price,
+            amount: coin1.amount,
+            total: coin1.price * coin1.amount
+          },
+          coin2: {
+            name: coin2.name,
+            value: coin2.price,
+            amount: coin2.amount,
+            total: coin2.price * coin2.amount
+          }
+        };
+        setComparisonResult(result);
+      }
+    }
   };
 
   const handleUpdatePrices = () => {
-    setButtonClicked(true);
     fetchCryptoPrices();
+  };
+
+  const handleAmountChange = (e, index) => {
+    const newAmount = parseFloat(e.target.value);
+    setCryptoPrices(prevPrices => prevPrices.map((coin, i) => (
+      i === index ? { ...coin, amount: newAmount } : coin
+    )));
   };
 
   return (
@@ -113,10 +185,8 @@ export default function Dashboard() {
             <tr className="bg-black text-white">
               <th className="px-4 py-3 text-left">Coin Name</th>
               <th className="px-4 py-3 text-right">Price (USD)</th>
-              <th className="px-4 py-3 text-left">Convert Coin</th>
               <th className="px-4 py-3 text-right">Amount</th>
-              <th className="px-4 py-3 text-right">Converted Price</th>
-              <th className="px-4 py-3 text-right">Convert</th>
+              <th className="px-4 py-3 text-right">Amount Price</th>
             </tr>
           </thead>
           <tbody>
@@ -128,40 +198,6 @@ export default function Dashboard() {
                   {coin.name} ({coin.symbol})
                 </td>
                 <td className="px-4 py-3 text-right">${coin.price.toFixed(2)}</td>
-                <td className="px-4 py-3 text-left">
-                  <Select
-                    value={coinOptions.find(option => option.value === coin.selectedCoin)}
-                    onChange={(selectedOption) => handleCoinChange(selectedOption, index)}
-                    options={coinOptions}
-                    className="w-32"
-                    menuPortalTarget={document.body}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        borderRadius: "0.375rem",
-                        borderColor: "#d1d5db",
-                        boxShadow: "none",
-                        "&:hover": {
-                          borderColor: "#9ca3af",
-                        },
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        borderRadius: "0.375rem",
-                        overflow: "hidden",
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        backgroundColor: state.isSelected ? "#4b5563" : "#ffffff",
-                        color: state.isSelected ? "#ffffff" : "#000000",
-                        "&:hover": {
-                          backgroundColor: "#e5e7eb",
-                        },
-                      }),
-                      menuPortal: base => ({ ...base, zIndex: 9999 })
-                    }}
-                  />
-                </td>
                 <td className="px-4 py-3 text-right">
                   <input
                     type="number"
@@ -172,16 +208,12 @@ export default function Dashboard() {
                 <td className="px-4 py-3 text-right">
                   ${(coin.price * coin.amount).toFixed(2)}
                 </td>
-                <td className="px-4 py-3 text-right">
-                  <button onClick={() => handleConvert(coin)} className="px-4 py-2 bg-black text-white rounded-md">
-                    Convert
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      
     </div>
   );
 }
